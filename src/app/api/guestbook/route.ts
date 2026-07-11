@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server'
-import { supabase } from '@/lib/supabaseClient'
+import { getSupabase } from '@/lib/supabaseClient'
 
 export async function POST(request: Request) {
   try {
@@ -12,7 +12,7 @@ export async function POST(request: Request) {
       )
     }
 
-    const { error } = await supabase
+    const { error } = await getSupabase()
       .from('guestbook')
       .insert([{ name: body.name, message: body.message }])
 

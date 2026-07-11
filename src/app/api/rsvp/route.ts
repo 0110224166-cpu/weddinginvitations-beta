@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server'
-import { supabase } from '@/lib/supabaseClient'
+import { getSupabase } from '@/lib/supabaseClient'
 import type { RsvpFormData } from '@/types'
 
 export async function POST(request: Request) {
@@ -13,7 +13,7 @@ export async function POST(request: Request) {
       )
     }
 
-    const { error } = await supabase
+    const { error } = await getSupabase()
       .from('guests')
       .insert([{
         name: body.name,

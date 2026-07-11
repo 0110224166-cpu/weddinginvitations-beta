@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { supabase } from '@/lib/supabaseClient'
+import { getSupabase } from '@/lib/supabaseClient'
 import type { Guestbook } from '@/types'
 import { wedding } from '@/data/wedding'
 
@@ -22,7 +22,8 @@ export function GuestbookSection() {
   useEffect(() => {
     fetchMessages()
 
-    const channel = supabase
+    const sb = getSupabase()
+    const channel = sb
       .channel('guestbook-realtime')
       .on('postgres_changes', {
         event: 'INSERT',
@@ -34,12 +35,12 @@ export function GuestbookSection() {
       .subscribe()
 
     return () => {
-      supabase.removeChannel(channel)
+      sb.removeChannel(channel)
     }
   }, [])
 
   const fetchMessages = async () => {
-    const { data, error } = await supabase
+    const { data, error } = await getSupabase()
       .from('guestbook')
       .select('*')
       .order('created_at', { ascending: false })
@@ -58,7 +59,7 @@ export function GuestbookSection() {
     setSubmitStatus('idle')
 
     try {
-      const { error } = await supabase
+      const { error } = await getSupabase()
         .from('guestbook')
         .insert([{ name, message }])
 
