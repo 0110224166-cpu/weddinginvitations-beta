@@ -13,7 +13,14 @@ export async function POST(request: Request) {
       )
     }
 
-    const { error } = await getSupabase()
+    const sb = getSupabase()
+    if (!sb) {
+      return NextResponse.json(
+        { error: 'Supabase not configured' },
+        { status: 503 }
+      )
+    }
+    const { error } = await sb
       .from('guests')
       .insert([{
         name: body.name,

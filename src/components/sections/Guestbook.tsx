@@ -23,6 +23,7 @@ export function GuestbookSection() {
     fetchMessages()
 
     const sb = getSupabase()
+    if (!sb) return
     const channel = sb
       .channel('guestbook-realtime')
       .on('postgres_changes', {
@@ -40,7 +41,9 @@ export function GuestbookSection() {
   }, [])
 
   const fetchMessages = async () => {
-    const { data, error } = await getSupabase()
+    const sb = getSupabase()
+    if (!sb) return
+    const { data, error } = await sb
       .from('guestbook')
       .select('*')
       .order('created_at', { ascending: false })
@@ -59,7 +62,13 @@ export function GuestbookSection() {
     setSubmitStatus('idle')
 
     try {
-      const { error } = await getSupabase()
+      const sb = getSupabase()
+      if (!sb) {
+        setSubmitStatus('error')
+        setIsSubmitting(false)
+        return
+      }
+      const { error } = await sb
         .from('guestbook')
         .insert([{ name, message }])
 
