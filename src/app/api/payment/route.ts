@@ -1,7 +1,4 @@
 import { NextResponse } from 'next/server'
-import Stripe from 'stripe'
-
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!)
 
 export async function POST(request: Request) {
   try {
@@ -13,6 +10,11 @@ export async function POST(request: Request) {
         { status: 400 }
       )
     }
+
+    const { default: Stripe } = await import('stripe')
+    const key = process.env.STRIPE_SECRET_KEY
+    if (!key) throw new Error('Missing STRIPE_SECRET_KEY')
+    const stripe = new Stripe(key)
 
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ['card'],
